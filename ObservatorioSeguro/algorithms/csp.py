@@ -61,9 +61,23 @@ def backtracking_search(csp, domains=None, select_variable=None,
         return result
 
     # TODO: Add your code here
-    raise NotImplementedError
-    # FIN DEL BLOQUE DEL ESTUDIANTE
+    def expand(assignment):
+        if len(assignment) == len(csp.variables):
+          return assignment
 
+        variable = choose(csp, assignment, domains)
+
+        for value in ordered(csp, variable, assignment, domains):
+          if consistent(variable, value, assignment):
+            new_assignment = assignment.copy()
+            new_assignment[variable] = value
+
+            result = search(new_assignment)
+
+            if result is not None:
+                return result
+
+        return None
     return search({})
 
 
