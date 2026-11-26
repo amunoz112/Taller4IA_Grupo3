@@ -153,8 +153,13 @@ def select_unassigned_variable(csp, assignment, domains):
     - csp.neighbors[x] contiene sus vecinos; csp.variables conserva el orden
       original para los desempates.
     """
-    # TODO: Add your code here
-    raise NotImplementedError
+    def priority(task):
+        options = sum(csp.consistent(task, slot, assignment) for slot in domains[task])
+        degree = sum(neighbor not in assignment for neighbor in csp.neighbors[task])
+        return options, -degree
+
+    pending = [task for task in csp.variables if task not in assignment]
+    return min(pending, key=priority)
     # FIN DEL BLOQUE DEL ESTUDIANTE
 
 
@@ -171,6 +176,19 @@ def order_domain_values(csp, variable, assignment, domains):
     - csp.compatible(variable, valor, vecino, valor_vecino) comprueba cada par
       sin modificar los dominios.
     """
-    # TODO: Add your code here
-    raise NotImplementedError
+    candidates = [slot for slot in domains[variable]
+                  if csp.consistent(variable, slot, assignment)]
+
+    def discarded_options(slot):
+        count = 0
+        for neighbor in csp.neighbors[variable]:
+            if neighbor in assignment:
+                continue
+            for other_slot in domains[neighbor]:
+                if csp.consistent(neighbor, other_slot, assignment):
+                    if not csp.compatible(variable, slot, neighbor, other_slot):
+                        count += 1
+        return count
+
+    return sorted(candidates, key=discarded_options)
     # FIN DEL BLOQUE DEL ESTUDIANTE
